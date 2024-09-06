@@ -31,7 +31,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          token: ${{ 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 }}
+          token: ${{ secrets.TOKEN }}
           submodules: recursive
       - name: Use Node.js 20
         uses: actions/setup-node@v4
