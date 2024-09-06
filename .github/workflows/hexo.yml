@@ -1,25 +1,50 @@
-name: Generate Hexo Blog
+name: Generate Hexo Blog and Deploy to GitHub Pages
 on:
   push:
     branches:
       - main
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout source
-      uses: actions/checkout@v2
-      with:
-        submodules: 'true'
-    - name: Setup Node.js
-      uses: actions/setup-node@v1
-      with:
-        node-version: '20'
-    - name: Setup hexo environment
-      run: |
-        npm install -g hexo-cli
-        npm ci
-    - name: Generate pages
-      run: |
-        hexo generate
-        ls -R public/
+      - name: Checkout source
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '20'
+      - name: Setup hexo environment
+        run: |
+          npm install -g hexo-cli
+          npm ci
+      - name: Generate pages
+        run: |
+          hexo generate
+          ls -R public/
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          submodules: recursive
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - name: Install Dependencies
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./public
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
