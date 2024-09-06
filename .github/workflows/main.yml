@@ -1,0 +1,25 @@
+name: Generate Hexo Blog
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v2
+        with:
+          submodules: 'true'
+      - name: Setup Node.js
+        uses: actions/setup-node@v1[^1^][1]
+        with:
+          node-version: '14'
+      - name: Setup Hexo environment
+        run: |
+          npm install -g hexo-cli[^2^][2]
+          npm ci
+      - name: Generate pages
+        run: |
+          hexo generate
+          ls -R public/[^3^][3]
